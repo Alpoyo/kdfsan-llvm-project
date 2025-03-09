@@ -86,6 +86,13 @@ static cl::opt<bool> MyDebugOpt(
     cl::cat(MyToolCategory)
 );
 
+static cl::opt<bool> MyStrictOpt(
+    "my-less-strict",
+    cl::desc("Ignore function name in matcher"),
+    cl::init(false),
+    cl::cat(MyToolCategory)
+);
+
 // CommonOptionsParser declares HelpMessage with a description of the common
 // command-line options related to the compilation database and input files.
 // It's nice to have this help message in all tools.
@@ -135,6 +142,14 @@ StatementMatcher matcher_impcast =
           )
         )
       )
+    )
+  ).bind("impcast");
+
+/* Less strict alternative */
+StatementMatcher matcher_impcast2 =
+  implicitCastExpr(
+    has(
+      callExpr()
     )
   ).bind("impcast");
 // StatementMatcher matcher_impcast = implicitCastExpr().bind("impcast");
@@ -255,7 +270,11 @@ int main(int argc, const char **argv) {
   // BinopDebug printer;
   MatchFinder finder;
   // finder.addMatcher(matcher_binop, &printer);
-  finder.addMatcher(matcher_impcast, &printer);
+  if (MyStrictOpt.getValue()) {
+    finder.addMatcher(matcher_impcast2, &printer);
+  } else {
+    finder.addMatcher(matcher_impcast, &printer);
+  }
 
   return Tool.run(newFrontendActionFactory(&finder).get());
 }

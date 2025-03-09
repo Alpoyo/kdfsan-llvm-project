@@ -56,6 +56,13 @@ static cl::opt<bool> MyDebugOpt(
     cl::cat(MyToolCategory)
 );
 
+static cl::opt<bool> MyFooOpt(
+    "my-foo",
+    cl::desc("Foo"),
+    cl::init(false),
+    cl::cat(MyToolCategory)
+);
+
 // CommonOptionsParser declares HelpMessage with a description of the common
 // command-line options related to the compilation database and input files.
 // It's nice to have this help message in all tools.
@@ -83,6 +90,11 @@ public:
         clang::SourceManager* sm = Result.SourceManager;
         const FunctionDecl *node = Result.Nodes.getNodeAs<clang::FunctionDecl>("func_decl");
         std::string fname = abspath(sm->getFilename(node->getBeginLoc()).str());
+        if (MyFooOpt.getValue()) {
+            puts(fname.data());
+            // printf("%s %s\n", fname.data(), node->getNameInfo().getAsString().data());// TODO
+            return;
+        }
         if (fname != main_file) {
             return;
         }
