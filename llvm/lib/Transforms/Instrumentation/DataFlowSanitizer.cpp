@@ -176,7 +176,7 @@ static cl::opt<bool> ClCombinePointerLabelsOnLoad(
     "dfsan-combine-pointer-labels-on-load",
     cl::desc("Combine the label of the pointer with the label of the data when "
              "loading from memory."),
-    cl::Hidden, cl::init(true));
+    cl::Hidden, cl::init(false));
 
 // Controls whether the pass includes or ignores the labels of pointers in
 // stores instructions.
